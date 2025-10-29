@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestCafeNegative(t *testing.T) {
@@ -67,13 +68,15 @@ func TestCafeCount(t *testing.T) {
 			{0, 0},
 			{1, 1},
 			{2, 2},
-			{100, len(cafes)},
+			{100, min(len(cafes), 100)},
 		}
 		for _, v := range requests {
 			response := httptest.NewRecorder()
 			req := httptest.NewRequest("GET", "/cafe?city="+city+"&count="+strconv.Itoa(v.count), nil)
 
 			handler.ServeHTTP(response, req)
+
+			require.Equal(t, http.StatusOK, response.Code)
 
 			if response.Body.String() != "" {
 				reqCafes := strings.Split(response.Body.String(), ",")
@@ -103,7 +106,7 @@ func TestCafeSearch(t *testing.T) {
 
 		handler.ServeHTTP(response, req)
 
-		assert.Equal(t, http.StatusOK, response.Code)
+		require.Equal(t, http.StatusOK, response.Code)
 
 		var got []string
 		if response.Body.String() != "" {
