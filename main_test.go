@@ -112,6 +112,9 @@ func TestCafeSearch(t *testing.T) {
 		if response.Body.String() != "" {
 			got = strings.Split(response.Body.String(), ",")
 		}
-		assert.Equal(t, v.wantCount, len(got), "for search=%q", v.search)
+		for _, cafe := range got {
+			assert.True(t, strings.Contains(strings.ToLower(cafe), strings.ToLower(v.search)), "for search=%q", v.search)
+		}
+		assert.Len(t, got, v.wantCount, "for search=%q", v.search)
 	}
 }
